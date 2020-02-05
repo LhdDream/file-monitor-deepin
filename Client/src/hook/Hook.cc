@@ -65,7 +65,7 @@ void Hook::RunOnce(int fd) {
         auto metadata = reinterpret_cast<struct fanotify_event_metadata *>(&buffer);
         while (FAN_EVENT_OK(metadata, len)) {
             auto name = File::ReadPath(metadata->fd);
-            if (!name.empty() && Ignored(name) ) {
+            if (!name.empty()  ) {
                 //获取相应事件
                 m_ignored.emplace(name);
                 if (metadata->mask & FAN_Q_OVERFLOW) {
@@ -84,6 +84,9 @@ void Hook::RunOnce(int fd) {
                         if (file_handle->m_count > 1) {
                             //说明不止一个进程打开了文件
                             AlloworDisAllow(fd, FAN_ALLOW, metadata->fd);
+                            continue;
+                        }
+                        if(Ignored(name)){
                             continue;
                         }
                         file_handle->m_Backup = true;//开始备份
