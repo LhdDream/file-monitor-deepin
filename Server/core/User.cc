@@ -4,11 +4,10 @@
 #include "User.h"
 bool User::Read(int fd) {
     std::string realpath;
-    auto re = recv(fd,Data.get(), sizeof(struct data),0);
+    auto re = recv(fd,Data.get(), sizeof(struct data),MSG_WAITALL);
     //建立目录等事件
     if(re > 0) {
-        if (!Data->sign) {
-            mkdir(Data->mac, S_IRWXU);
+            mkdir(Data->mac, S_IRWXU );
             for (auto &c :Data->path) {
                 if (c == '/')
                     c = '@';
@@ -18,23 +17,20 @@ bool User::Read(int fd) {
             realpath += Data->path;
             fd = open(realpath.c_str(), O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
             lseek(fd,  Data->n, SEEK_SET);
-            int count = write(fd, Data->content, sizeof(Data->content));
+            int count = write(fd, Data->content, strlen(Data->content));
             close(fd);
-        } else {
-            return false;
-        }
     }
-    return true;
+    return !Data->sign;
 }
 
 bool User::Write(int fd) {
     //发送事件
     //获取文件大小,然后发送
-    std::string filepath = Data->mac;
     for(auto &c :Data->path){
         if(c== '/')
             c = '@';
     }
+    std::string filepath = Data->mac;
     filepath += '/' ;
     filepath += Data->path;
     struct stat64 st{};
@@ -43,15 +39,22 @@ bool User::Write(int fd) {
         printf("%s\n",strerror(errno));
         return false;
     }
-    int Writefd = open(filepath.c_str(),O_WRONLY);
+    int Writefd = open(filepath.c_str(),O_RDONLY);
+    if(Writefd < 0){
+        printf("%s\n",strerror(errno));
+       return false;
+    }
     int count = 0;
     bzero(Data->content, sizeof(Data->content));
-    while((count += read(Writefd,Data->content, sizeof(Data->content))) != st.st_size){
-       auto sendit =  send(fd,Data.get(), sizeof(struct data),0);
-       if(sendit < 0){
-           return false;
-       }
-        bzero(Data->content, sizeof(Data->content));
+    auto len = (sizeof(Data->content) > st.st_size) ? st.st_size : sizeof(Data->content) ;
+    while(count != st.st_size){
+          count += read(Writefd,Data->content, len);
+          len = (st.st_size - count) > sizeof(Data->content) ? sizeof(Data->content) : (st.st_size- count);
+          auto sendit =  send(fd,Data.get(), sizeof(struct data),0);
+          if(sendit < 0){
+            return false;
+         }
+         bzero(Data->content, sizeof(Data->content));
     }
     return true;
 }

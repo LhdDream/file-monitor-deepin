@@ -21,7 +21,7 @@ void Socket::SetResueport() {
 size_t Socket::Accpet() {
     struct sockaddr_in client{};
     socklen_t client_addrlength = sizeof(client);
-    int fd = ::accept4(m_sockfd, (struct sockaddr *) &client, &client_addrlength, SOCK_NONBLOCK | SOCK_CLOEXEC);
+    int fd = ::accept(m_sockfd, (struct sockaddr *) &client, &client_addrlength);
     return fd;
 }
 
