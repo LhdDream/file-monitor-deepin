@@ -12,6 +12,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "../net/Epoll.h"
+#include "../log/log.h"
+
 class User{
 public:
     struct data{
