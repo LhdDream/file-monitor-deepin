@@ -88,8 +88,8 @@ void Hook::RunOnce(int fd) {
                         }
                         file_handle->m_Backup = true;//开始备份
                         //获取文件内容
-                       // file_handle->ReadySend(name, m_poll);
-                       // file_handle->ModifyFile(name);
+                         file_handle->ReadySend(name, m_poll);
+                         file_handle->ModifyFile(name);
                     } else if (c == Event::k_close_write || c == Event::k_close_nowrite) {
                         file_handle->m_count--;
                         if (file_handle->m_count == 0) {
