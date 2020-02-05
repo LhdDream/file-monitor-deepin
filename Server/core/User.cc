@@ -37,12 +37,12 @@ bool User::Write(int fd) {
     auto it =  stat64(filepath.c_str(),&st);
     if(it < 0 ){
         printf("%s\n",strerror(errno));
-        return false;
+        return true;
     }
     int Writefd = open(filepath.c_str(),O_RDONLY);
     if(Writefd < 0){
         printf("%s\n",strerror(errno));
-       return false;
+       return true;
     }
     int count = 0;
     bzero(Data->content, sizeof(Data->content));
