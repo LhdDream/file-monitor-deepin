@@ -1,0 +1,10 @@
+{
+   "Server": {
+     "ip": "127.0.0.1",
+     "port": 8080
+   },
+   "Client": {
+     "path": "/home/kiosk/fanotify-example",
+     "mac": "d4:81:d7:a7:18:bb"
+   }
+}
