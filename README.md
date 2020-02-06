@@ -112,7 +112,7 @@
 
 - 执行 `cmake ..` 和` make`
 
-- 执行相应的程序
+- 执行相应的程序(sudo ./file_monitor_deepin 和file_Server)
 
 #### 最后
 
