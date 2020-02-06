@@ -116,6 +116,18 @@
 - 执行相应的程序(sudo ./file_monitor_deepin 和file_Server)
 
 
+#### 效果演示
+
+
+- 服务器没有连接
+
+![image](https://github.com/LhdDream/file-monitor-deepin/blob/master/img/1.png)
+
+- 服务器连接,客户端收到和服务器备份文件相同
+
+
+![image](https://github.com/LhdDream/file-monitor-deepin/blob/master/img/2.png)
+
 
 #### 最后
 
