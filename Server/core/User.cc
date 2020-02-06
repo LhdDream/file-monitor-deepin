@@ -15,7 +15,7 @@ bool User::Read(int fd) {
             realpath = Data->mac;
             realpath += '/';
             realpath += Data->path;
-            fd = open(realpath.c_str(), O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
+            fd = open(realpath.c_str(), O_CREAT | O_WRONLY,0666);
             if(fd < 0 ){
                 Logger().info() << "Open " << strerror(errno);
             }

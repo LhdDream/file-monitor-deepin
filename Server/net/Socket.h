@@ -20,7 +20,7 @@ public:
     ~Socket() { close(m_sockfd); }
 
     void Createfd(const char *ip = "127.0.0.1", const int port = 8080){
-        m_sockfd = socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
+        m_sockfd = socket(PF_INET, SOCK_STREAM  | SOCK_CLOEXEC, 0);
         bzero(&m_address, sizeof(struct sockaddr_in));
         m_address.sin_family = AF_INET;
         m_address.sin_addr.s_addr = INADDR_ANY;

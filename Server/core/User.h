@@ -12,7 +12,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "../net/Epoll.h"
-#include "../log/log.h"
+#include "Log.h"
 
 class User{
 public:
