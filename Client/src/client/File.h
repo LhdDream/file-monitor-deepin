@@ -40,8 +40,8 @@ public:
         buffer[len] = '\0';
         return std::string(buffer);
     }
-    void ModifyFile(const std::string &m_path);
-    void ReadySend(const std::string &path ,const std::unique_ptr<thread_pool> & pool);
+    void ModifyFile(int filefd);
+    void ReadySend(int fd, const std::unique_ptr<thread_pool> &pool,std::string &path);
     //获取文件内容
     void SendClose(int client,const std::string & name);
     static void RecvFile(Socket && client);

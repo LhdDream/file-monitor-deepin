@@ -65,41 +65,37 @@ void Hook::RunOnce(int fd) {
         auto metadata = reinterpret_cast<struct fanotify_event_metadata *>(&buffer);
         while (FAN_EVENT_OK(metadata, len)) {
             auto name = File::ReadPath(metadata->fd);
-            if (!name.empty()  && getpid() != metadata->pid && name != ".gitignore") {
+            if (!name.empty()  && name != ".gitignore") {
                 //获取相应事件
                 if (metadata->mask & FAN_Q_OVERFLOW) {
                     continue;
                 }
-                const auto &c = GetFaniontyEvent(metadata->mask);
                 if (!m_callback()) {
                     AlloworDisAllow(fd,FAN_DENY,metadata->fd);
                     close(metadata->fd);
                     break;
                 }//说明状态没有连接
-                if (c != Event::k_none) {
-                    //说明有事件
-                    auto &&file_handle = Getcount(name);
-                    if (c == Event::k_open || c == Event::k_open_pram) {
-                        file_handle->m_count++; // 引用计数++
-                        if (file_handle->m_count > 1) {
+                auto &&file_handle = Getcount(name);
+                if (metadata->mask & FAN_OPEN_PERM  ) {
+                    file_handle->m_count++; // 引用计数++
+                    if (file_handle->m_count > 1) {
                             //说明不止一个进程打开了文件
                             AlloworDisAllow(fd, FAN_ALLOW, metadata->fd);
                             continue;
-                        }
-                        file_handle->m_Backup = true;//开始备份
-                        //获取文件内容
-                         file_handle->ReadySend(name, m_poll);
-                         file_handle->ModifyFile(name);
-                    } else if (c == Event::k_close_write || c == Event::k_close_nowrite) {
-                        file_handle->m_count--;
-                        if (file_handle->m_count == 0) {
-                            //恢复
-                            file_handle->SendClose(m_serverfd(),name);
-                            file_handle->m_Backup = false;
-                        }
+                    }
+                    file_handle->m_Backup = true;//开始备份
+                    //获取文件内容
+                    file_handle->ReadySend(metadata->fd,m_poll,name);
+                    AlloworDisAllow(fd,FAN_ALLOW,metadata->fd);
+                } else if ((metadata->mask & FAN_CLOSE_WRITE) || (metadata->mask & FAN_CLOSE_NOWRITE)) {
+                    file_handle->m_count--;
+                    if (file_handle->m_count == 0) {
+                        //恢复
+                        file_handle->SendClose(m_serverfd(),name);
+                        file_handle->m_Backup = false;
                     }
                 }
-            }
+             }
             close(metadata->fd);
             metadata = FAN_EVENT_NEXT(metadata, len);
         }

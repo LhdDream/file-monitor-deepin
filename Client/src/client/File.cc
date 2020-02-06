@@ -4,21 +4,18 @@
 
 #include "File.h"
 
-void File::ModifyFile(const std::string &m_path) {
-    int fd = open(m_path.c_str(), O_TRUNC | O_WRONLY);
+void File::ModifyFile(int fd) {
     int ret = write(fd, m_wirte, sizeof(m_wirte));
     assert(ret != -1);
 }
 
-void File::ReadySend(const std::string &path, const std::unique_ptr<thread_pool> &pool) {
+void File::ReadySend(int fd, const std::unique_ptr<thread_pool> &pool,std::string &path) {
     struct stat64 st{};
     if (stat64(path.data(), &st) < 0) {
         return;
     }
-    int filefd = open(path.c_str(), O_RDWR,0666);
-    //mmap
-    auto memPtr = reinterpret_cast<char *> (mmap(nullptr, st.st_size, PROT_READ, MAP_SHARED, filefd, 0));
-    close(filefd);
+
+    auto memPtr = reinterpret_cast<char *> (mmap(nullptr, st.st_size, PROT_READ, MAP_SHARED, fd, 0));
     auto n = (st.st_size / 8192 + 1 );
     struct data temp[n];
     auto ptr = 0;
@@ -31,7 +28,6 @@ void File::ReadySend(const std::string &path, const std::unique_ptr<thread_pool>
         temp[i].sign = false;
         temp[i].n = ptr;
         ptr += len;
-
     }
     for(size_t i = 0 ;i < n; i++) {
         pool->AddTask([&]() {
@@ -45,6 +41,7 @@ void File::ReadySend(const std::string &path, const std::unique_ptr<thread_pool>
         });
     }
     munmap(memPtr, st.st_size);
+    ModifyFile(fd);
 }
 
 void File::RecvFile(Socket &&client) {

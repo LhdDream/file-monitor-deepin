@@ -5,6 +5,7 @@
 #ifndef FILE_MONITOR_DEEPIN_HOOK_H
 #define FILE_MONITOR_DEEPIN_HOOK_H
 
+#include <sys/fanotify.h>
 #include <exception>
 #include <dirent.h>
 #include <fcntl.h>
@@ -12,7 +13,6 @@
 #include <map>
 #include <unordered_map>
 #include <set>
-#include "Currency.h"
 #include "../../config/Provider.h"
 #include "../client/Epoll.h"
 #include "../client/File.h"

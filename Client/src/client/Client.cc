@@ -13,7 +13,8 @@ void Client::Run() {
        for (int i = 0; i < re; i++) {
            if (Result[i].data.fd != m_client.GetFd()) {
                //监控事件逻辑
-               m_Hook.RunOnce(Result[i].data.fd);
+               if(Result[i].events & Readable())
+                    m_Hook.RunOnce(Result[i].data.fd);
            } else {
                //服务器事件逻辑
                if(Result[i].events & ::EPOLLRDHUP)
