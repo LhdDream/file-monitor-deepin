@@ -35,7 +35,7 @@ public:
         m_client_fd = socket(PF_INET, SOCK_STREAM  | SOCK_CLOEXEC, 0);
         bzero(&m_address, sizeof(struct sockaddr_in));
         m_address.sin_family = AF_INET;
-        m_address.sin_addr.s_addr = INADDR_ANY;
+        inet_pton(AF_INET,ip,&m_address.sin_addr);
         m_address.sin_port = htons(port);
     }
 
@@ -63,8 +63,8 @@ public:
     }
 private:
 
-    int m_client_fd;
-    struct sockaddr_in m_address;
-    State m_Connect_State ;// 连接状态
+    int m_client_fd = 0 ;
+    struct sockaddr_in m_address{};
+    State m_Connect_State  = K_DisConnect;// 连接状态
 };
 #endif //FILE_MONITOR_DEEPIN_SOCKET_H

@@ -35,9 +35,6 @@ public:
        m_serverfd = std::move(callback);
    }
 
-   bool Ignored(const std::string & filepath){
-       return m_ignored.find(filepath) == m_ignored.end();
-   }
 private:
     //发送标志位
 
@@ -46,11 +43,10 @@ private:
     std::unique_ptr<thread_pool> m_poll;
     std::vector<int> m_table;
     std::unordered_map<std::string,std::unique_ptr<File> > m_count;   //所有文件的引用计数
-    std::set<std::string> m_ignored = {".gitignore"}; //防止多次打开影响多次备份
     ProcessLineState m_callback; //回调事件
     ServerFd  m_serverfd; // 回调
 private:
-    int AlloworDisAllow(int fd , int flag, int Filefd);
+    int AlloworDisAllow(int fd , int flag, int filefd);
     auto Getcount(const std::string & namefile) -> decltype(m_count[namefile]);
 };
 #endif //FILE_MONITOR_DEEPIN_HOOK_H

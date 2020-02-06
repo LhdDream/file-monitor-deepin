@@ -17,7 +17,7 @@ bool Hook::Init(std::string &&FilePath) {
     try {
         auto &temp = FilePath;
         int m_fd = fanotify_init(FAN_CLASS_CONTENT, O_RDWR);
-        auto ret = fanotify_mark(m_fd, FAN_MARK_ADD, FAN_CLOSE | FAN_OPEN | FAN_EVENT_ON_CHILD, AT_FDCWD,
+        auto ret = fanotify_mark(m_fd, FAN_MARK_ADD, FAN_CLOSE | FAN_OPEN_PERM | FAN_EVENT_ON_CHILD, AT_FDCWD,
                                  temp.c_str());
         m_table.emplace_back(m_fd);
         m_epoll.Add_Channel(m_fd, Readable());
@@ -44,13 +44,13 @@ bool Hook::Init(std::string &&FilePath) {
 }
 
 
-int Hook::AlloworDisAllow(int fd, int flag, int Filefd) {
+int Hook::AlloworDisAllow(int fd, int flag, int filefd) {
     try {
         struct fanotify_response response{};
-        response.fd = Filefd;
+        response.fd = filefd;
         response.response = flag; // allow or disallow
-        if (write(fd, &response, sizeof response) < 0) {
-            throw std::invalid_argument("Write Error");
+        if (write(fd, &response, sizeof (struct fanotify_response)) < 0) {
+            throw std::invalid_argument(strerror(errno));
         }
     } catch (std::invalid_argument &e) {
         printf("%s\n", e.what());
@@ -61,20 +61,20 @@ int Hook::AlloworDisAllow(int fd, int flag, int Filefd) {
 void Hook::RunOnce(int fd) {
     char buffer[65535];
     ssize_t len = 0;
-    if ((len = read(fd, buffer, 65535)) > 0) {
+    if ((len = read(fd, buffer, sizeof(buffer))) > 0) {
         auto metadata = reinterpret_cast<struct fanotify_event_metadata *>(&buffer);
         while (FAN_EVENT_OK(metadata, len)) {
             auto name = File::ReadPath(metadata->fd);
-            if (!name.empty()  ) {
+            if (!name.empty()  && getpid() != metadata->pid && name != ".gitignore") {
                 //获取相应事件
-                m_ignored.emplace(name);
                 if (metadata->mask & FAN_Q_OVERFLOW) {
                     continue;
                 }
                 const auto &c = GetFaniontyEvent(metadata->mask);
                 if (!m_callback()) {
+                    AlloworDisAllow(fd,FAN_DENY,metadata->fd);
                     close(metadata->fd);
-                    continue;
+                    break;
                 }//说明状态没有连接
                 if (c != Event::k_none) {
                     //说明有事件
@@ -84,9 +84,6 @@ void Hook::RunOnce(int fd) {
                         if (file_handle->m_count > 1) {
                             //说明不止一个进程打开了文件
                             AlloworDisAllow(fd, FAN_ALLOW, metadata->fd);
-                            continue;
-                        }
-                        if(Ignored(name)){
                             continue;
                         }
                         file_handle->m_Backup = true;//开始备份
@@ -103,7 +100,6 @@ void Hook::RunOnce(int fd) {
                     }
                 }
             }
-            m_ignored.erase(name);
             close(metadata->fd);
             metadata = FAN_EVENT_NEXT(metadata, len);
         }
