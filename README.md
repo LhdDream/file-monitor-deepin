@@ -72,6 +72,11 @@
 
 
 
+#### fanotify中的loop问题如何解决?
+
+* 这个问题在使用 inotify也会有,即监控程序打开被监控的文件目录会有响应
+* 我们可以使用`fanotify`的`struct fanotify_event_metadata`中的`fd`相当于被打开的文件句柄,我们可以借此来达到我们的操作目的
+
 #### 服务器概要设计
 
 - 每个线程创建各自的epoll和监听套接字,使用`reuseport`特性
@@ -105,14 +110,12 @@
 #### 安装和运行
 
 - 在`Client/config`目录下找到`init.json`文件,修改相应的配置
-
 - `sudo cp init.json /etc` 
-
 - 分别在 Client 和Server 目录下 创建 build 目录
-
 - 执行 `cmake ..` 和` make`
-
 - 执行相应的程序(sudo ./file_monitor_deepin 和file_Server)
+
+
 
 #### 最后
 
