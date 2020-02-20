@@ -5,10 +5,11 @@
 #ifndef FILE_SERVER_THREADPOOL_H
 #define FILE_SERVER_THREADPOOL_H
 
-#include "../Server/Server.h"
-#include <vector>
 #include <thread>
 #include <utility>
+#include <vector>
+
+#include "../Server/Server.h"
 
 thread_local Server m_Server;
 
@@ -23,7 +24,7 @@ public:
     }
 
     int wait() {
-        for (auto &i: thcont_) {
+        for (auto& i : thcont_) {
             i.join();
         }
 
@@ -34,4 +35,4 @@ private:
     std::vector<std::thread> thcont_;
 };
 
-#endif //FILE_SERVER_THREADPOOL_H
+#endif  // FILE_SERVER_THREADPOOL_H

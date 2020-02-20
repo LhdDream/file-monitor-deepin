@@ -5,19 +5,19 @@
 #ifndef FILE_SERVER_SERVER_H
 #define FILE_SERVER_SERVER_H
 
-#include "../net/Socket.h"
-#include "../net/Epoll.h"
-#include "../core/User.h"
-
 #include <unordered_map>
-class Server{
+
+#include "../core/User.h"
+#include "../net/Epoll.h"
+#include "../net/Socket.h"
+class Server {
 public:
-    Server():m_Epoll(),m_Socket() {
-    };
+    Server() : m_Epoll(), m_Socket(){};
     void Run();
+
 private:
     Epoll m_Epoll;
     Socket m_Socket;
-    std::unordered_map<int,std::unique_ptr<User>> m_table;
+    std::unordered_map<int, std::unique_ptr<User>> m_table;
 };
-#endif //FILE_SERVER_SERVER_H
+#endif  // FILE_SERVER_SERVER_H
