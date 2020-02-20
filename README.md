@@ -118,12 +118,12 @@
 
 - 服务器没有连接
 
-![image](https://gitee.com/kioskLhd/file-monitor-deepin/raw/master/img/1.png)
+![image](https://raw.githubusercontent.com/LhdDream/file-monitor-deepin/master/img/1.png)
 
 - 服务器连接,客户端收到和服务器备份文件相同
 
 
-![image](https://gitee.com/kioskLhd/file-monitor-deepin/raw/master/img/2.png)
+![image](https://github.com/LhdDream/file-monitor-deepin/blob/master/img/2.png)
 
 
 #### 最后
