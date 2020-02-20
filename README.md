@@ -118,7 +118,7 @@
 
 - 服务器没有连接
 
-![image](https://github.com/LhdDream/file-monitor-deepin/blob/master/img/1.png)
+![image](/img/1.png)
 
 - 服务器连接,客户端收到和服务器备份文件相同
 
