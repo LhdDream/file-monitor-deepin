@@ -3,7 +3,7 @@
 //
 #include "src/client/Client.h"
 
-int main(){
+int main() {
     Provider::Get();
     Client c;
     c.Run();

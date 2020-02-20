@@ -2,7 +2,7 @@
 // Created by kiosk on 2020/1/31.
 //
 #include "Provider.h"
-Provider::Provider(){
+Provider::Provider() {
     auto fp = fopen("/etc/init.json", "rb");
     auto Buffer = std::make_unique<char[]>(4096);
     rapidjson::FileReadStream Read(fp, Buffer.get(), 4096);
