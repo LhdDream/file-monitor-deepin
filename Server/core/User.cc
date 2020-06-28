@@ -17,13 +17,13 @@ bool User::Read(int fd) {
         realpath += Data->path;
         fd = open(realpath.c_str(), O_CREAT | O_WRONLY, 0666);
         if (fd < 0) {
-            Logger().info() << "Open " << strerror(errno);
+            LOG(DEBUG , "Open  %s", strerror(errno));
         }
         lseek(fd, Data->n, SEEK_SET);
         int count = write(fd, Data->content, strlen(Data->content));
         close(fd);
     } else if (re < 0) {
-        Logger().info() << "Recv " << strerror(errno);
+        LOG(DEBUG , "Recv  %s", strerror(errno));
     }
     return !Data->sign;
 }
@@ -41,12 +41,12 @@ bool User::Write(int fd) {
     struct stat64 st {};
     auto it = stat64(filepath.c_str(), &st);
     if (it < 0) {
-        Logger().info() << "filepath ERROR " << strerror(errno);
+        LOG(DEBUG , "filepath ERROR  %s", strerror(errno));
         return true;
     }
     int Writefd = open(filepath.c_str(), O_RDONLY);
     if (Writefd < 0) {
-        Logger().info() << "filepath ERROR " << strerror(errno);
+        LOG(DEBUG , "filepath ERROR  %s", strerror(errno));
         return true;
     }
     int count = 0;
@@ -57,7 +57,7 @@ bool User::Write(int fd) {
         len = (st.st_size - count) > sizeof(Data->content) ? sizeof(Data->content) : (st.st_size - count);
         auto sendit = send(fd, Data.get(), sizeof(struct data), 0);
         if (sendit < 0) {
-            Logger().info() << "Send ERROR " << strerror(errno);
+            LOG(DEBUG , "filepath ERROR  %s", strerror(errno));
             return false;
         }
         bzero(Data->content, sizeof(Data->content));
