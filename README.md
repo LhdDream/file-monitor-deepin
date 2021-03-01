@@ -104,6 +104,7 @@
       char  content[8192];//文件内容
       bool  sign ; // 事件标志 open  false   or close true
       longlong   n; //文件开始偏移量 
+      ...
   };
   ```
 
